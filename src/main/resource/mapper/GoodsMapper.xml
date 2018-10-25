@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shop.dao.GoodsDao">
+    <select id="listGoods" resultType="com.shop.entity.Goods">
+        select * from goods
+    </select>
+    <!--查找秒杀商品的列表-->
+    <select id="getSeckillGoodsList" resultType="com.shop.entity.SeckillGoods">
+        select * from seckill_goods
+    </select>
+
+    <!--查询秒杀商品的数量-->
+    <select id="getSeckillStock" parameterType="Long" resultType="Integer">
+        select stock_count from seckill_goods where goods_id=#{goodsId}
+    </select>
+    <!--通过goodsId查询Goods-->
+    <select id="getGoodsByGid" parameterType="Long" resultType="com.shop.entity.Goods">
+        select * from goods where id=#{goodsId} limit 0,1
+    </select>
+    <!--通过GoodsId查询SeckillGoods-->
+    <select id="getSeckillGoodsByGid" parameterType="Long" resultType="com.shop.entity.SeckillGoods">
+        select * from seckill_goods where goods_id=#{goodsId} limit 0,1
+    </select>
+<!--减少一个库存-->
+    <update id="reduceStock" parameterType="Long">
+        update seckill_goods
+        set stock_count = stock_count - 1
+        where goods_id = #{goodsId} and stock_count > 0
+    </update>
+</mapper>

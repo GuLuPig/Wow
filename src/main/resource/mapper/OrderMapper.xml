@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shop.dao.OrderDao">
+
+
+
+    <insert id="insertOrder" parameterType="com.shop.entity.OrderInfo">
+        insert into order_info(id,goods_id,goods_name,user_id,goods_price)
+        values (#{id},#{goodsId},#{goodsName},#{userId},#{goodsPrice})
+    </insert>
+
+    <insert id="insertSeckillOrder" parameterType="com.shop.entity.SeckillOrder">
+        insert into seckill_order(order_id,goods_id,user_id)
+        values (#{orderId},#{goodsId},#{userId})
+    </insert>
+
+
+    <!--测试Transactional声明式事务管理-->
+    <insert id="testTransactional" parameterType="com.shop.entity.OrderInfo">
+        insert into order_info(id,user_id)
+        values (#{id},#{userId})
+    </insert>
+</mapper>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+
+
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.3.xsd
+
+       http://www.springframework.org/schema/rabbit
+        http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+    <!-- spring 自动扫描组件 -->
+    <context:component-scan base-package="com.shop.controller"/>
+
+    <!--rabbitmq-->
+    <!-- 连接配置 -->
+    <rabbit:connection-factory id="connectionFactory" host="127.0.0.1" username="guest" password="guest" port="5672"/>
+    <rabbit:admin connection-factory="connectionFactory"/>
+    <!--声明模板-->
+    <rabbit:template id="amqpTemplate" exchange="test_rmq_exchange" connection-factory="connectionFactory"/>
+    <!--创建队列queue，路由exchange及绑定binding关系-->
+
+    <rabbit:queue id="queue_1" name="test_queue" durable="true" auto-delete="false" exclusive="false"/>
+    <rabbit:queue id="queue_2" name="queue.hello" durable="true" auto-delete="false" exclusive="false"/>
+    <rabbit:queue name="queue_seckill" durable="true" auto-delete="false" exclusive="false"/>
+
+    <rabbit:topic-exchange name="seckill_exchange" durable="true" auto-delete="false">
+        <rabbit:bindings>
+            <rabbit:binding queue="queue_seckill" pattern="seckill_key"/>
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+
+
+    <!-- 消费者 -->
+    <bean name="RabbitmqConsumer" class="com.shop.rabbitmq.RabbitmqConsumer"/>
+
+    <!-- 配置监听 -->
+    <rabbit:listener-container connection-factory="connectionFactory">
+        <rabbit:listener queues="queue_seckill" ref="RabbitmqConsumer" method="onMessage"/>
+    </rabbit:listener-container>
+</beans>
